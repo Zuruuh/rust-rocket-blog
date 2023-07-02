@@ -1,8 +1,10 @@
 use dotenv::dotenv;
 use rocket_db_pools::Database;
 
-mod db;
 mod controllers;
+mod db;
+mod models;
+mod repositories;
 
 #[rocket::launch]
 fn rocket() -> _ {

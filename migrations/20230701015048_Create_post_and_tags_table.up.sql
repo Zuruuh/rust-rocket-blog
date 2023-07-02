@@ -1,0 +1,17 @@
+CREATE TABLE posts (
+    id UUID PRIMARY KEY NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    author VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE tags (
+    id UUID PRIMARY KEY NOT NULL,
+    label VARCHAR(32) NOT NULL
+);
+
+CREATE TABLE post_tags (
+    post_id UUID NOT NULL REFERENCES posts(id),
+    tag_id UUID NOT NULL REFERENCES tags(id),
+    CONSTRAINT POST_TAGS_PRIMARY_KEY PRIMARY KEY(post_id, tag_id)
+);
