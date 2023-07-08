@@ -11,12 +11,13 @@ fn rocket() -> _ {
     dotenv().ok();
 
     let routes = controllers::routes();
+
     let mut app = rocket::build()
         .attach(db::Blog::init())
     ;
 
-    for route in routes {
-        app = app.mount(route.0, route.1);
+    for (prefix, subroutes) in routes {
+        app = app.mount(prefix, subroutes);
     }
 
     app
