@@ -1,37 +1,42 @@
-use std::ops::DerefMut;
-
 use async_trait::async_trait;
+use diesel::{QueryDsl, RunQueryDsl, SelectableHelper};
 
-use crate::{models::Post, db::BlogConnection};
+use crate::{db::BlogConnection, models::Post, schema::posts::dsl::posts};
 
 #[async_trait]
 pub trait PostRepository {
-    async fn list(&mut self, limit: i32, offset: i32) -> Option<Vec<Post>>;
+    async fn list(&mut self, limit: i64, offset: i64) -> Vec<Post>;
 }
 
 pub struct PersistentPostRepository<'a> {
-    // db: Box<&'a BlogConnection>,
     db: &'a mut BlogConnection,
 }
 
 impl<'a> PersistentPostRepository<'a> {
     pub fn new(db: &'a mut BlogConnection) -> Self {
-        // Self { db: Box::new(db) }
         Self { db }
     }
 }
 
 #[async_trait]
 impl<'a> PostRepository for PersistentPostRepository<'a> {
-    async fn list(&mut self, limit: i32, offset: i32) -> Option<Vec<Post>> {
-        let maybe_posts = sqlx::query_file_as!(Post, "queries/post/list.sql", limit, offset)
-            .fetch_all(self.db.deref_mut())
-            .await;
+    async fn list(&mut self, limit: i64, offset: i64) -> Vec<Post> {
+      let maybe_posts = self.db.run(move |connection| {
+            posts
+                .select(Post::as_select())
+                .limit(limit)
+                .offset(offset)
+                .load(connection)
+        }).await;
 
         if maybe_posts.is_err() {
-            return None;
+            println!(
+                "An error occured while loading posts: {:?}",
+                maybe_posts.unwrap_err()
+            );
+            return vec![];
         }
 
-        Some(maybe_posts.unwrap())
+        maybe_posts.unwrap()
     }
 }

@@ -1,7 +1,4 @@
-use rocket_db_pools::{Connection, Database, sqlx::PgPool};
+use rocket_sync_db_pools::{database, diesel};
 
-#[derive(Database)]
 #[database("blog")]
-pub struct Blog(PgPool);
-
-pub type BlogConnection = Connection<Blog>;
+pub struct BlogConnection(diesel::PgConnection);

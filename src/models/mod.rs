@@ -1,4 +1,3 @@
 mod post;
-mod uuid;
 
-pub use post::Post;
+pub use post::*;

@@ -7,10 +7,10 @@ edition = "2021"
 
 [dependencies]
 async-trait = "0.1.68"
+diesel = { version = "2.1.0", features = ["postgres", "uuid", "serde_json"] }
 dotenv = "0.15.0"
 rocket = { version = "=0.5.0-rc.3", features = ["json"] }
-rocket_db_pools = { version = "=0.1.0-rc.3", features = ["sqlx_postgres", "sqlx", "sqlx_macros"] }
+rocket_sync_db_pools = { version = "0.1.0-rc.3", features = ["diesel_postgres_pool"] }
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = "1.0.99"
-sqlx = { version = "0.6.3", features = ["postgres", "uuid", "time"] }
 uuid = { version = "1.4.0", features = ["v4", "serde"] }

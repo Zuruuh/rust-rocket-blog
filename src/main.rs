@@ -1,6 +1,6 @@
 use dotenv::dotenv;
-use rocket_db_pools::Database;
 
+mod schema;
 mod controllers;
 mod db;
 mod models;
@@ -13,7 +13,7 @@ fn rocket() -> _ {
     let routes = controllers::routes();
 
     let mut app = rocket::build()
-        .attach(db::Blog::init())
+        .attach(db::BlogConnection::fairing())
     ;
 
     for (prefix, subroutes) in routes {
