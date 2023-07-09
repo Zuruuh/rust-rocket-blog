@@ -3,8 +3,8 @@
 git clone https://github.com/Zuruuh/rust-rocket-blog.git
 cd rust-rocket-blog
 cp .env.example .env
-cargo install sqlx-cli
-sqlx migrate up
+cargo install diesel_cli
+diesel migration run
 cargo build
 ```
 
@@ -12,8 +12,4 @@ cargo build
 ```bash
 docker compose up -d
 cargo run
-```
-
-```prod
-
 ```

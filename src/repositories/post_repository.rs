@@ -1,7 +1,11 @@
 use async_trait::async_trait;
-use diesel::{QueryDsl, RunQueryDsl, SelectableHelper};
+use diesel::{associations::HasTable, QueryDsl, RunQueryDsl, SelectableHelper, Table};
 
-use crate::{db::BlogConnection, models::Post, schema::posts::dsl::posts};
+use crate::{
+    db::BlogConnection,
+    models::{Post, Tag, PostTag},
+    schema::{posts, tags, post_tags},
+};
 
 #[async_trait]
 pub trait PostRepository {
@@ -15,19 +19,23 @@ pub struct PersistentPostRepository<'a> {
 impl<'a> PersistentPostRepository<'a> {
     pub fn new(db: &'a mut BlogConnection) -> Self {
         Self { db }
-    }
+    } pv
 }
 
 #[async_trait]
 impl<'a> PostRepository for PersistentPostRepository<'a> {
     async fn list(&mut self, limit: i64, offset: i64) -> Vec<Post> {
-      let maybe_posts = self.db.run(move |connection| {
-            posts
-                .select(Post::as_select())
-                .limit(limit)
-                .offset(offset)
-                .load(connection)
-        }).await;
+        let maybe_posts = self
+            .db
+            .run(move |connection| {
+                posts::table
+                    .left_join(post_tags::table.on(posts::id.eq(post_tags::post_id)))
+                    .select((posts::id))
+                    .limit(limit)
+                    .offset(offset)
+                    .load(connection)
+            })
+            .await;
 
         if maybe_posts.is_err() {
             println!(
@@ -37,6 +45,10 @@ impl<'a> PostRepository for PersistentPostRepository<'a> {
             return vec![];
         }
 
-        maybe_posts.unwrap()
+        // maybe_posts.unwrap()
+        let found_posts = maybe_posts.unwrap();
+        dbg!(found_posts);
+
+        vec![]
     }
 }

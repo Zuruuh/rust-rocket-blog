@@ -8,7 +8,7 @@ use crate::{
 };
 
 #[get("/?<limit>&<offset>")]
-pub async fn list(
+pub async fn list_posts_with_tags(
     mut db: BlogConnection,
     limit: Option<i64>,
     offset: Option<i64>,
@@ -22,5 +22,5 @@ pub async fn list(
 }
 
 pub fn routes() -> RouteMapping {
-    ("/blog", routes![list])
+    ("/blog", routes![list_posts_with_tags])
 }

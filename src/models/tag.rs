@@ -1,16 +1,14 @@
 use diesel::{Queryable, Selectable, Identifiable};
 use uuid::Uuid;
 
-use crate::schema::posts;
+use crate::schema::tags;
 
 #[derive(Debug)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Queryable, Selectable, Identifiable)]
-#[diesel(table_name = posts)]
+#[diesel(table_name = tags)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
-pub struct Post {
+pub struct Tag {
     pub id: Uuid,
-    pub title: String,
-    pub content: String,
-    pub author: String,
+    pub label: String,
 }
