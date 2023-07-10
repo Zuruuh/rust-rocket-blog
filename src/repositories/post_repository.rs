@@ -1,10 +1,10 @@
 use async_trait::async_trait;
-use diesel::{associations::HasTable, QueryDsl, RunQueryDsl, SelectableHelper, Table};
+use diesel::{associations::HasTable, QueryDsl, RunQueryDsl, SelectableHelper, Table, ExpressionMethods};
 
 use crate::{
     db::BlogConnection,
-    models::{Post, Tag, PostTag},
-    schema::{posts, tags, post_tags},
+    models::{Post, PostTag, Tag},
+    schema::{post_tags, posts, tags},
 };
 
 #[async_trait]
@@ -19,7 +19,7 @@ pub struct PersistentPostRepository<'a> {
 impl<'a> PersistentPostRepository<'a> {
     pub fn new(db: &'a mut BlogConnection) -> Self {
         Self { db }
-    } pv
+    }
 }
 
 #[async_trait]
@@ -29,11 +29,11 @@ impl<'a> PostRepository for PersistentPostRepository<'a> {
             .db
             .run(move |connection| {
                 posts::table
-                    .left_join(post_tags::table.on(posts::id.eq(post_tags::post_id)))
-                    .select((posts::id))
+                    .inner_join(post_tags::table.inner_join(tags::table))
+                    .select((Post::as_select(), Tag::as_select()))
                     .limit(limit)
                     .offset(offset)
-                    .load(connection)
+                    .load::<(Post, Tag)>(connection)
             })
             .await;
 
