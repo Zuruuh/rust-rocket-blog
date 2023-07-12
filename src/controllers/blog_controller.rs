@@ -1,9 +1,9 @@
-use rocket::{get, routes, serde::json::Json};
+use rocket::{get, routes, serde::json::Json, post, form::Form};
 
 use crate::{
     db::BlogConnection,
     controllers::mapping::RouteMapping,
-    repositories::{PersistentPostRepository, PostRepository, PostsWithTagsDTO},
+    repositories::{PersistentPostRepository, PostRepository, PostsWithTagsDTO}, dto::CreatePostDTO,
 };
 
 #[get("/?<limit>&<offset>")]
@@ -20,6 +20,14 @@ pub async fn list_posts_with_tags(
     Json(posts)
 }
 
+#[post("/", format = "application/json", data = "<create_post_dto>")]
+pub async fn create_post(mut db: BlogConnection, create_post_dto: Json<CreatePostDTO>) -> &'static str {
+    dbg!(create_post_dto);
+    db.run
+
+    "yo"
+}
+
 pub fn routes() -> RouteMapping {
-    ("/blog", routes![list_posts_with_tags])
+    ("/blog", routes![list_posts_with_tags, create_post])
 }

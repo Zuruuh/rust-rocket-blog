@@ -3,6 +3,7 @@ use dotenv::dotenv;
 mod schema;
 mod controllers;
 mod db;
+mod dto;
 mod models;
 mod repositories;
 

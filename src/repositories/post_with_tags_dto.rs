@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use uuid::Uuid;
 
-use crate::models::{Tag, Post};
+use crate::models::{Post, Tag};
 
 #[derive(serde::Serialize)]
 pub struct PostsWithTagsDTO(Vec<PostWithTagsDTO>);
@@ -13,7 +13,19 @@ pub struct PostWithTagsDTO {
     pub title: String,
     pub content: String,
     pub author: String,
-    pub tags: Vec<Tag>
+    pub tags: Vec<Tag>,
+}
+
+impl PostWithTagsDTO {
+    pub fn new(post: Post, tags: Vec<Tag>) -> Self {
+        PostWithTagsDTO {
+            id: post.id,
+            title: post.title,
+            content: post.content,
+            author: post.author,
+            tags,
+        }
+    }
 }
 
 impl PostsWithTagsDTO {
@@ -23,18 +35,14 @@ impl PostsWithTagsDTO {
             results_map.entry(post).or_default().push(tag);
         }
 
-        Self(results_map.iter().map(|(post, tags)| -> PostWithTagsDTO {
-            let post = post.to_owned();
-            let tags = tags.to_vec();
-
-            PostWithTagsDTO {
-                id: post.id,
-                title: post.title,
-                content: post.content,
-                author: post.author,
-                tags
-            }
-        }).collect())
+        Self(
+            results_map
+                .iter()
+                .map(|(post, tags)| -> PostWithTagsDTO {
+                    PostWithTagsDTO::new(post.to_owned(), tags.to_vec())
+                })
+                .collect(),
+        )
     }
 }
 

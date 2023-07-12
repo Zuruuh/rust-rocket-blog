@@ -5,12 +5,15 @@ use crate::{
     db::BlogConnection,
     models::{Post, Tag},
     repositories::PostsWithTagsDTO,
-    schema::{post_tags, posts, tags},
+    schema::{post_tags, posts, tags}, dto::CreatePostDTO,
 };
+
+use super::PostWithTagsDTO;
 
 #[async_trait]
 pub trait PostRepository {
     async fn list(&mut self, limit: i64, offset: i64) -> PostsWithTagsDTO;
+    async fn save(&mut self, create_post_dto: CreatePostDTO) -> PostWithTagsDTO;
 }
 
 pub struct PersistentPostRepository<'a> {
@@ -47,5 +50,12 @@ impl<'a> PostRepository for PersistentPostRepository<'a> {
         }
 
         PostsWithTagsDTO::new(maybe_posts.unwrap())
+    }
+
+    async fn save(&mut self, create_post_dto: CreatePostDTO) -> PostWithTagsDTO {
+        self.db.run(move |connection| {
+            
+        })
+        panic!();
     }
 }
