@@ -13,3 +13,9 @@ cargo build
 docker compose up -d
 cargo run
 ```
+
+```bash
+curlie http://localhost:8000/blog
+```
+
+<img src="https://cdn.discordapp.com/attachments/785207461379833859/1128777267896664185/image.png" />
