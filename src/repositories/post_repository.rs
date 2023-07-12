@@ -1,16 +1,16 @@
 use async_trait::async_trait;
-use diesel::{associations::HasTable, QueryDsl, RunQueryDsl, SelectableHelper, Table, ExpressionMethods};
+use diesel::{QueryDsl, RunQueryDsl, SelectableHelper};
 
 use crate::{
     db::BlogConnection,
-    models::{Post, PostTag, Tag},
+    models::{Post, Tag},
     repositories::PostsWithTagsDTO,
     schema::{post_tags, posts, tags},
 };
 
 #[async_trait]
 pub trait PostRepository {
-    async fn list(&mut self, limit: i64, offset: i64) -> Vec<Post>;
+    async fn list(&mut self, limit: i64, offset: i64) -> PostsWithTagsDTO;
 }
 
 pub struct PersistentPostRepository<'a> {
@@ -25,7 +25,7 @@ impl<'a> PersistentPostRepository<'a> {
 
 #[async_trait]
 impl<'a> PostRepository for PersistentPostRepository<'a> {
-    async fn list(&mut self, limit: i64, offset: i64) -> Vec<Post> {
+    async fn list(&mut self, limit: i64, offset: i64) -> PostsWithTagsDTO {
         let maybe_posts = self
             .db
             .run(move |connection| {
@@ -43,13 +43,9 @@ impl<'a> PostRepository for PersistentPostRepository<'a> {
                 "An error occured while loading posts: {:?}",
                 maybe_posts.unwrap_err()
             );
-            return vec![];
+            return PostsWithTagsDTO::default();
         }
 
-        // maybe_posts.unwrap()
-        let found_posts = maybe_posts.unwrap();
-        PostsWithTagsDTO::new(found_posts);
-
-        vec![]
+        PostsWithTagsDTO::new(maybe_posts.unwrap())
     }
 }

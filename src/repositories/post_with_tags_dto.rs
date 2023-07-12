@@ -4,6 +4,7 @@ use uuid::Uuid;
 
 use crate::models::{Tag, Post};
 
+#[derive(serde::Serialize)]
 pub struct PostsWithTagsDTO(Vec<PostWithTagsDTO>);
 
 #[derive(serde::Serialize)]
@@ -21,8 +22,24 @@ impl PostsWithTagsDTO {
         for (post, tag) in data {
             results_map.entry(post).or_default().push(tag);
         }
-        dbg!(results_map);
 
+        Self(results_map.iter().map(|(post, tags)| -> PostWithTagsDTO {
+            let post = post.to_owned();
+            let tags = tags.to_vec();
+
+            PostWithTagsDTO {
+                id: post.id,
+                title: post.title,
+                content: post.content,
+                author: post.author,
+                tags
+            }
+        }).collect())
+    }
+}
+
+impl Default for PostsWithTagsDTO {
+    fn default() -> Self {
         Self(vec![])
     }
 }
