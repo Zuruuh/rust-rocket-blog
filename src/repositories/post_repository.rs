@@ -4,6 +4,7 @@ use diesel::{associations::HasTable, QueryDsl, RunQueryDsl, SelectableHelper, Ta
 use crate::{
     db::BlogConnection,
     models::{Post, PostTag, Tag},
+    repositories::PostsWithTagsDTO,
     schema::{post_tags, posts, tags},
 };
 
@@ -47,7 +48,7 @@ impl<'a> PostRepository for PersistentPostRepository<'a> {
 
         // maybe_posts.unwrap()
         let found_posts = maybe_posts.unwrap();
-        dbg!(found_posts);
+        PostsWithTagsDTO::new(found_posts);
 
         vec![]
     }
