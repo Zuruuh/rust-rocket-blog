@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 use crate::schema::tags;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, PartialOrd, Eq, Ord)]
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Queryable, Selectable, Identifiable)]
 #[diesel(table_name = tags)]
